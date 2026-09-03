@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import './globals.scss';
 
+import { Header } from '@/components/layout/Header';
 import { QueryProvider } from '@/providers/QueryProvider';
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <QueryProvider>
+          <Header />
           {children}
         </QueryProvider>
       </body>

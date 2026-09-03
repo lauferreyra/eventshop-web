@@ -12,124 +12,184 @@ interface EventCardProps {
 export function EventCard({
   event,
 }: EventCardProps) {
+  const isSoldOut = event.stock <= 0;
+
   return (
-    <Card>
-      <Content>
-        <Label>EVENTO</Label>
+    <Card $soldOut={isSoldOut}>
+      <Top>
+        <Category>LIVE EVENT</Category>
 
-        <Title>{event.name}</Title>
+        {isSoldOut && (
+          <SoldOut>AGOTADO</SoldOut>
+        )}
+      </Top>
 
-        <Info>
-          <InfoItem>
-            <InfoLabel>Precio</InfoLabel>
+      <Title>{event.name}</Title>
 
-            <InfoValue>
-              $
-              {event.unitPrice.toLocaleString(
-                'es-AR',
-              )}
-            </InfoValue>
-          </InfoItem>
+      <Divider />
 
-          <InfoItem>
-            <InfoLabel>Disponibles</InfoLabel>
+      <Info>
+        <InfoItem>
+          <Label>PRECIO</Label>
 
-            <InfoValue>
-              {event.stock}
-            </InfoValue>
-          </InfoItem>
-        </Info>
+          <Price>
+            $
+            {event.unitPrice.toLocaleString(
+              'es-AR',
+            )}
+          </Price>
+        </InfoItem>
 
+        <InfoItem>
+          <Label>ENTRADAS</Label>
+
+          <Stock>
+            {event.stock > 0
+              ? `${event.stock} disponibles`
+              : 'Sin stock'}
+          </Stock>
+        </InfoItem>
+      </Info>
+
+      {isSoldOut ? (
+        <DisabledButton>
+          Agotado
+        </DisabledButton>
+      ) : (
         <StyledLink
           href={`/events/${encodeURIComponent(
             event.name,
           )}`}
         >
           Ver evento
+          <Arrow>→</Arrow>
         </StyledLink>
-      </Content>
+      )}
     </Card>
   );
 }
 
-const Card = styled.article`
-  overflow: hidden;
+const Card = styled.article<{
+  $soldOut: boolean;
+}>`
+  padding: 28px;
 
   border: 1px solid #292929;
   border-radius: 16px;
 
   background: #141414;
 
+  opacity: ${({ $soldOut }) =>
+    $soldOut ? 0.65 : 1};
+
   transition:
     transform 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color 0.2s ease;
 
   &:hover {
-    transform: translateY(-6px);
-    border-color: #d4af37;
+    transform: ${({ $soldOut }) =>
+      $soldOut
+        ? 'none'
+        : 'translateY(-6px)'};
 
-    box-shadow:
-      0 20px 40px rgba(0, 0, 0, 0.35);
+    border-color: ${({ $soldOut }) =>
+      $soldOut
+        ? '#292929'
+        : '#d4af37'};
   }
 `;
 
-const Content = styled.div`
-  padding: 32px;
+const Top = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
-const Label = styled.span`
+const Category = styled.span`
   color: #d4af37;
 
   font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.18rem;
+  letter-spacing: 0.15rem;
+`;
+
+const SoldOut = styled.span`
+  padding: 5px 8px;
+
+  border-radius: 4px;
+
+  background: #292929;
+  color: #a0a0a0;
+
+  font-size: 0.65rem;
+  font-weight: 700;
 `;
 
 const Title = styled.h3`
-  min-height: 70px;
-  margin-top: 16px;
+  min-height: 72px;
+
+  margin-top: 24px;
 
   color: #ffffff;
 
   font-size: 1.5rem;
-  line-height: 1.2;
+  line-height: 1.25;
+`;
+
+const Divider = styled.div`
+  height: 1px;
+
+  margin: 24px 0;
+
+  background: #292929;
 `;
 
 const Info = styled.div`
   display: flex;
   justify-content: space-between;
 
-  margin: 32px 0;
+  margin-bottom: 28px;
 `;
 
 const InfoItem = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 `;
 
-const InfoLabel = styled.span`
-  color: #8f8f8f;
-  font-size: 0.8rem;
+const Label = styled.span`
+  color: #737373;
+
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
 `;
 
-const InfoValue = styled.strong`
+const Price = styled.strong`
   color: #ffffff;
-  font-size: 1.1rem;
+
+  font-size: 1.2rem;
+`;
+
+const Stock = styled.span`
+  color: #a0a0a0;
+
+  font-size: 0.85rem;
 `;
 
 const StyledLink = styled(Link)`
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  padding: 14px;
+  padding: 14px 16px;
 
   border-radius: 6px;
 
   background: #d4af37;
   color: #000000;
 
-  text-align: center;
+  font-size: 0.9rem;
   font-weight: 700;
 
   transition: background 0.2s ease;
@@ -137,4 +197,22 @@ const StyledLink = styled(Link)`
   &:hover {
     background: #e5c04a;
   }
+`;
+
+const Arrow = styled.span`
+  font-size: 1.2rem;
+`;
+
+const DisabledButton = styled.div`
+  padding: 14px 16px;
+
+  border-radius: 6px;
+
+  background: #292929;
+  color: #737373;
+
+  text-align: center;
+
+  font-size: 0.9rem;
+  font-weight: 700;
 `;
