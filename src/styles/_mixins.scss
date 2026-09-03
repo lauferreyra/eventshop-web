@@ -1,0 +1,10 @@
+@mixin container {
+  width: min(100% - 32px, $container-width);
+  margin-inline: auto;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

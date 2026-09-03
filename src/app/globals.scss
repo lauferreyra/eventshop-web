@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@use '../styles/variables' as *;
+@use '../styles/reset';
+@use '../styles/mixins' as *;
+
+body {
+  background: $color-background;
+  color: $color-text;
+  font-family: Arial, Helvetica, sans-serif;
+}
