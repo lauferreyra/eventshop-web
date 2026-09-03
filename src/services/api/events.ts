@@ -1,4 +1,4 @@
-import { apiClient } from './client.js';
+import { apiClient } from './client';
 import type { Event } from '@/types/event';
 
 export function getEvents() {

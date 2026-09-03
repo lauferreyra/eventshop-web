@@ -2,11 +2,12 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getEvents } from '@/services/api/events';
+import { getEvent } from '@/services/api/events';
 
-export function useEvents() {
+export function useEvent(name: string) {
   return useQuery({
-    queryKey: ['events'],
-    queryFn: getEvents,
+    queryKey: ['event', name],
+    queryFn: () => getEvent(name),
+    enabled: Boolean(name),
   });
 }
