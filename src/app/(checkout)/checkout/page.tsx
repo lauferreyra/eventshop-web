@@ -1,13 +1,13 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
 
 import { useCreateOrder } from '@/hooks/useCreateOrder';
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
 
   const eventName =
@@ -149,6 +149,22 @@ export default function CheckoutPage() {
         </Content>
       </Container>
     </Page>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <Page>
+          <Container>
+            <p>Cargando checkout...</p>
+          </Container>
+        </Page>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }
 
