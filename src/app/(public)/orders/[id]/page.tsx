@@ -1,13 +1,14 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 import { useOrder } from '@/hooks/use-orders';
 
+import styles from './page.module.scss';
+
 export default function OrderPage() {
   const params = useParams<{ id: string }>();
-
   const orderId = params.id;
 
   const {
@@ -19,106 +20,178 @@ export default function OrderPage() {
 
   if (isLoading) {
     return (
-      <main>
-        <h1>Procesando tu orden...</h1>
-        <p>Estamos procesando tu reserva.</p>
+      <main className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.loading}>
+            <div className={styles.spinner} />
+
+            <h1>Procesando tu orden</h1>
+
+            <p>
+              Estamos procesando tu reserva. Esto puede
+              tardar unos segundos.
+            </p>
+          </div>
+        </div>
       </main>
     );
   }
 
   if (isError) {
     return (
-      <main>
-        <h1>No pudimos cargar la orden</h1>
+      <main className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.card}>
+            <div className={styles.iconError}>!</div>
 
-        <p>
-          {error instanceof Error
-            ? error.message
-            : 'Ocurrió un error inesperado.'}
-        </p>
+            <h1>No pudimos cargar la orden</h1>
 
-        <Link href="/events">
-          Volver a eventos
-        </Link>
+            <p>
+              {error instanceof Error
+                ? error.message
+                : 'Ocurrió un error inesperado.'}
+            </p>
+
+            <Link
+              href="/events"
+              className={styles.button}
+            >
+              Volver a eventos
+            </Link>
+          </div>
+        </div>
       </main>
     );
   }
 
   if (!order) {
     return (
-      <main>
-        <h1>Orden no encontrada</h1>
+      <main className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.card}>
+            <h1>Orden no encontrada</h1>
 
-        <Link href="/events">
-          Volver a eventos
-        </Link>
+            <p>
+              No encontramos una orden con el identificador
+              solicitado.
+            </p>
+
+            <Link
+              href="/events"
+              className={styles.button}
+            >
+              Volver a eventos
+            </Link>
+          </div>
+        </div>
       </main>
     );
   }
 
+  const isCompleted = order.status === 'COMPLETED';
+  const isFailed = order.status === 'FAILED';
+
   return (
-    <main>
-      <h1>Orden #{order.id}</h1>
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <span className={styles.eyebrow}>
+            EVENTSHOP
+          </span>
 
-      <p>
-        Evento: <strong>{order.eventName}</strong>
-      </p>
-
-      <p>
-        Cantidad: <strong>{order.quantity}</strong>
-      </p>
-
-      <p>
-        Email: <strong>{order.email}</strong>
-      </p>
-
-      <p>
-        Estado:{' '}
-        <strong>{order.status}</strong>
-      </p>
-
-      {order.status === 'PENDING' && (
-        <p>
-          Estamos preparando tu reserva...
-        </p>
-      )}
-
-      {order.status === 'RESERVED' && (
-        <p>
-          Entradas reservadas. Estamos procesando el
-          pago...
-        </p>
-      )}
-
-      {order.status === 'COMPLETED' && (
-        <section>
-          <h2>¡Compra confirmada! 🎉</h2>
+          <h1>Estado de tu orden</h1>
 
           <p>
-            Tu pago fue aprobado y tus entradas están
-            confirmadas.
+            Orden #{order.id}
           </p>
+        </div>
 
-          <Link href="/events">
-            Ver más eventos
-          </Link>
+        <section className={styles.card}>
+          <div
+            className={`${styles.statusIcon} ${
+              isCompleted
+                ? styles.success
+                : isFailed
+                  ? styles.failed
+                  : styles.pending
+            }`}
+          >
+            {isCompleted
+              ? '✓'
+              : isFailed
+                ? '!'
+                : '...'}
+          </div>
+
+          <div className={styles.status}>
+            <h2>
+              {isCompleted
+                ? '¡Compra confirmada!'
+                : isFailed
+                  ? 'Compra rechazada'
+                  : 'Procesando tu compra'}
+            </h2>
+
+            <p>
+              {isCompleted
+                ? 'Tu pago fue aprobado y tus entradas están confirmadas.'
+                : isFailed
+                  ? 'No pudimos completar el pago de tu compra.'
+                  : order.status === 'RESERVED'
+                    ? 'Tus entradas fueron reservadas. Estamos procesando el pago.'
+                    : 'Estamos preparando tu reserva.'}
+            </p>
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.details}>
+            <div className={styles.detail}>
+              <span>Evento</span>
+
+              <strong>{order.eventName}</strong>
+            </div>
+
+            <div className={styles.detail}>
+              <span>Cantidad</span>
+
+              <strong>
+                {order.quantity}{' '}
+                {order.quantity === 1
+                  ? 'entrada'
+                  : 'entradas'}
+              </strong>
+            </div>
+
+            <div className={styles.detail}>
+              <span>Email</span>
+
+              <strong>{order.email}</strong>
+            </div>
+
+            <div className={styles.detail}>
+              <span>Estado</span>
+
+              <strong>{order.status}</strong>
+            </div>
+          </div>
+
+          {(isCompleted || isFailed) && (
+            <>
+              <div className={styles.divider} />
+
+              <Link
+                href="/events"
+                className={styles.button}
+              >
+                {isCompleted
+                  ? 'Ver más eventos'
+                  : 'Volver a eventos'}
+              </Link>
+            </>
+          )}
         </section>
-      )}
-
-      {order.status === 'FAILED' && (
-        <section>
-          <h2>No pudimos completar la compra</h2>
-
-          <p>
-            El pago fue rechazado o la reserva no pudo
-            completarse.
-          </p>
-
-          <Link href="/events">
-            Volver a eventos
-          </Link>
-        </section>
-      )}
+      </div>
     </main>
   );
 }
