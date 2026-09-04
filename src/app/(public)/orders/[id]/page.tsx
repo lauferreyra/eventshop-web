@@ -47,9 +47,9 @@ export default function OrderPage() {
             <h1>No pudimos cargar la orden</h1>
 
             <p>
-              {error instanceof Error
+            {error instanceof Error
                 ? error.message
-                : 'Ocurrió un error inesperado.'}
+                : JSON.stringify(error)}
             </p>
 
             <Link
